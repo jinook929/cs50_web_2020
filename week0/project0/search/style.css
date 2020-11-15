@@ -1,0 +1,73 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+#imageSearch > button > a, #advancedSearch > button > a {
+  text-decoration: none;
+  text-transform: none;
+}
+
+form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#searchbox {
+  border-radius: 24px;
+}
+
+.searchbtn {
+  width: 150px;
+  border: none;
+  border-radius: 4px;
+}
+
+input {width: 300px;
+  margin: 10px;
+  padding: 10px;
+  align-self: center;
+}
+
+button {
+  margin: 10px;padding: 10px;
+}
+
+#advancedDef {
+  text-align: center;
+}
+
+.advanced {
+  display: flex;
+  flex-direction: row;
+  justify-content: center; 
+  align-items: center;
+}
+
+.advanced label {
+  width: 200px;
+}
+
+#imgSearch {
+  display: flex;
+  /* flex-direction: row; */
+  justify-content: center; 
+  /* align-items: center; */
+}
+
+#imgSearch > img {
+  width: 200px;
+}
+
+input[type=submit] {
+  background-color: blue;
+  border: none;
+  color: #fff;
+  padding: 15px 30px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}

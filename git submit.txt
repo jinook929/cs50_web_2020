@@ -1,0 +1,36 @@
+~/Desktop/Jinook/CS50 Web Programming_2020/week0/project0/search
+$ git clone https://github.com/me50/jinook929.git
+
+=====================================================================
+
+~/Desktop/Jinook/CS50 Web Programming_2020 (master)
+$ git clone https://github.com/me50/jinook929.git
+
+~/Desktop/Jinook/CS50 Web Programming_2020/jinook929 (cs50/problems/2020/x/project)
+$ git branch web50/projects/2020/x/search
+
+~/Desktop/Jinook/CS50 Web Programming_2020/jinook929 (cs50/problems/2020/x/project)
+$ git checkout web50/projects/2020/x/search
+Switched to branch 'web50/projects/2020/x/search'
+
+~/Desktop/Jinook/CS50 Web Programming_2020/jinook929 (web50/projects/2020/x/search)
+$ git add index.html
+
+~/Desktop/Jinook/CS50 Web Programming_2020/jinook929 (web50/projects/2020/x/search)
+$ git commit -m "Initial commit"
+[web50/projects/2020/x/search d861bfd] Initial commit
+
+~/Desktop/Jinook/CS50 Web Programming_2020/jinook929 (web50/projects/2020/x/search)
+$ git push --set-upstream origin web50/projects/2020/x/search
+
+=====================================================================
+
+~/Desktop/Jinook/CS50 Web Programming_2020/jinook929 (web50/projects/2020/x/search)
+$ git add -A
+
+~/Desktop/Jinook/CS50 Web Programming_2020/jinook929 (web50/projects/2020/x/search)
+$ git commit -m "new files"
+[web50/projects/2020/x/search 538edd9] new files
+
+~/Desktop/Jinook/CS50 Web Programming_2020/jinook929 (web50/projects/2020/x/search)
+$ git push
