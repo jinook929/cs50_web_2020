@@ -1,0 +1,10 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    Encyclopedia
+{% endblock %}
+
+{% block body %}
+  <h1>[Entry: {{ title }}] Not Found</h1>
+  <a href="{% url 'index' %}">Back to Main</a>
+{% endblock %}
