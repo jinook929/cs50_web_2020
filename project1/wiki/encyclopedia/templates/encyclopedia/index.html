@@ -1,5 +1,7 @@
 {% extends "encyclopedia/layout.html" %}
 
+{% load static %}
+
 {% block title %}
     Encyclopedia
 {% endblock %}
@@ -7,10 +9,13 @@
 {% block body %}
     <h1>All Pages</h1>
 
-    <ul>
-        {% for entry in entries %}
-            <li><a href="wiki/{{ entry }}">{{ entry }}</a></li>
+    <ul id="entryList">
+        {% for item in entries %}
+            <li id="{{ item }}" class="entry"><a href="{% url 'entry' item %}">{{ item }}</a></li>
         {% endfor %}
     </ul>
+{% endblock %}
 
+{% block script %}
+    <script src="{% static 'encyclopedia/myscripts.js' %}"></script>
 {% endblock %}

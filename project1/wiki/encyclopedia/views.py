@@ -8,20 +8,51 @@ from . import util
 
 def index(request):
     entries = util.list_entries()
-    return render(request, "encyclopedia/index.html", {
-        "entries": entries
-    })
+    return render(request, "encyclopedia/index.html", {"entries": entries})
 
-def error(request):
-    return render(request, "encyclopedia/error.html")
 
 def entry(request, title):
-    entry = util.get_entry(title)
-    if not entry:
-        return render(request, "encyclopedia/error.html", {
-            "title": title
-        })
+    try:
+        entry = format_html(markdown2.markdown(util.get_entry(title)))
+    except:
+        entry = ""
+    entries = util.list_entries()
 
-    return render(request, "encyclopedia/entry.html", {
-        "entry": format_html(markdown2.markdown(entry))
-    })
+    context = {
+        "title": title,
+        "entry": entry,
+        "entries": entries
+    }
+
+    if not title in entries:
+        return render(request, "encyclopedia/error.html", context)
+
+    return render(request, "encyclopedia/entry.html", context)
+
+
+def search(request):
+    title = request.GET.get('q')
+    try:
+        entry = format_html(markdown2.markdown(util.get_entry(title)))
+    except:
+        entry = ""
+    entries = util.list_entries()
+    lowerTitle = title.lower()
+    lowerEntries = []
+    for item in entries:
+        lowerEntries.append(item.lower())
+
+    context = {
+        "title": title, 
+        "entry": entry, 
+        "entries": entries
+    }
+
+    if not lowerTitle in lowerEntries:
+        return render(request, "encyclopedia/error.html", context)
+
+    return render(request, "encyclopedia/search.html", context)
+
+
+def create():
+    return render(request, 'encyclopedia/create.html')

@@ -12,8 +12,8 @@
         <div class="row">
             <div class="sidebar col-lg-2 col-md-3">
                 <h2>Wiki</h2>
-                <form>
-                    <input class="search" type="text" name="q" placeholder="Search Encyclopedia">
+                <form action="{% url 'search' %}">
+                    <input id="searchWord" value="" class="search" type="text" name="q" placeholder="Search Encyclopedia" onkeyup="myfunc()">
                 </form>
                 <div>
                     <a href="{% url 'index' %}">Home</a>
@@ -32,6 +32,7 @@
                 {% endblock %}
             </div>
         </div>
-
+        {% block script %}
+        {% endblock %}
     </body>
 </html>

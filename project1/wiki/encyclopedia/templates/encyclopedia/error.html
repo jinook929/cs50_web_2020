@@ -1,10 +1,21 @@
 {% extends "encyclopedia/layout.html" %}
 
+{% load static %}
+
 {% block title %}
-    Encyclopedia
+  Encyclopedia
 {% endblock %}
 
 {% block body %}
-  <h1>[Entry: {{ title }}] Not Found</h1>
-  <a href="{% url 'index' %}">Back to Main</a>
+  <h1>"{{ title }}" Not Found</h1>
+  <h3>All Pages</h3>
+  <ul id="entryList">
+    {% for item in entries %}
+      <li id="{{ item }}" class="entry"><a href="{% url 'entry' item %}">{{ item }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}
+
+{% block script %}
+  <script src="{% static 'encyclopedia/myscripts.js' %}"></script>
 {% endblock %}
