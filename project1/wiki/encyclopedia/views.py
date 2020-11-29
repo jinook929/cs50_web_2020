@@ -54,5 +54,5 @@ def search(request):
     return render(request, "encyclopedia/search.html", context)
 
 
-def create():
+def create(request):
     return render(request, 'encyclopedia/create.html')
