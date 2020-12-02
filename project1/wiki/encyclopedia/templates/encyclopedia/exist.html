@@ -1,0 +1,21 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% load static %}
+
+{% block title %}
+  Encyclopedia
+{% endblock %}
+
+{% block body %}
+  <h1>Your entry title already exists...</h1>
+  <h3><a href="{% url 'index' %}">Back to all entries</a></h3>
+  <ul id="entryList" style="display: none">
+    {% for item in entries %}
+      <li id="{{ item }}" class="entry"><a href="{% url 'entry' item %}">{{ item }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}
+
+{% block script %}
+  <script src="{% static 'encyclopedia/myscripts.js' %}"></script>
+{% endblock %}

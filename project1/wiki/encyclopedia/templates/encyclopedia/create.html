@@ -7,14 +7,13 @@
 {% endblock %}
 
 {% block body %}
-  <div id="details">
-    {{ entry }}
-  </div>
-  <ul id="entryList" style="display: none;">
-    {% for item in entries %}
-      <li id="{{ item }}" class="entry"><a href="{% url 'entry' item %}">{{ item }}</a></li>
-    {% endfor %}
-  </ul>
+  <h1>CREATE PAGE</h1>
+  <form action="{% url 'create' %}" method="POST">{% csrf_token %}
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" placeholder="Your title here"><br>
+    <textarea name="content" id="content" cols="10" rows="5" placeholder="Write your content in Markdown. (Please refer to 'markdownguide.org')"></textarea><br>
+    <input type="submit" value="Submit">
+  </form> 
 {% endblock %}
 
 {% block script %}
