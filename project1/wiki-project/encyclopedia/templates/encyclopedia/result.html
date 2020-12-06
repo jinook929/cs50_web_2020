@@ -1,0 +1,27 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% load static %}
+
+{% block title %}
+    Encyclopedia
+{% endblock %}
+
+{% block body %}
+  <h1>Search Results</h1>
+  <div id="resultLi">
+    <ul id="resultList">
+      {% for item in resultLists %}
+        <li id="{{ item }}" class="entry"><a href="{% url 'entry' item %}">{{ item }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+  <ul id="entryList" style="display: none;">
+    {% for item in entries %}
+      <li id="{{ item }}" class="entry"><a href="{% url 'entry' item %}">{{ item }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'encyclopedia/myscripts.js' %}"></script>
+{% endblock %}

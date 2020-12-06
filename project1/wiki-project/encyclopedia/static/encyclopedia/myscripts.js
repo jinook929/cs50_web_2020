@@ -26,6 +26,7 @@ function myfunc() {
 
   if(search === "") {
     viewAll();
+    entryList.setAttribute("style", "display: block;")
     return;
   }
 

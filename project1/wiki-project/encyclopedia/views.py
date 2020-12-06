@@ -54,7 +54,20 @@ def search(request):
     }
 
     if not lowerTitle in lowerEntries:
-        return render(request, "encyclopedia/error.html", context)
+        resultLists = []
+        for item in lowerEntries:
+            if lowerTitle in item:
+                resultLists.append(item.capitalize())
+
+        if not resultLists:
+            return render(request, "encyclopedia/error.html", context)
+
+        return render(request, "encyclopedia/result.html", {
+            "title": title, 
+            "entry": entry, 
+            "entries": entries,
+            "resultLists": resultLists,
+        })
 
     return render(request, "encyclopedia/search.html", context)
 
