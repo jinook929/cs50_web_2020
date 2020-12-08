@@ -1,3 +1,60 @@
+시작폴더로 이동: 
+cd C:\Users\jinoo\Desktop\CS\CS50\cs50_submit\jinook929
+
+branch 확인: 
+git branch
+
+branch 만들기: 
+git branch web50/projects/2020/x/프로젝트명
+
+branch 변경: 
+git checkout web50/projects/2020/x/프로젝트명
+
+시작폴더에 프로젝트파일 이동 (이전 파일들은 삭제)
+
+프로젝트 파일 add: 
+git add .
+
+프로젝트 파일 commit: 
+git commit -m "upload project1 files"
+
+프로젝트 업로드: 
+git push --set-upstream origin web50/projects/2020/x/
+
+=====================================================================
+
+PS C:\Users\jinoo\Desktop\CS\CS50\cs50_submit\jinook929> git branch web50/projects/2020/x/wiki
+PS C:\Users\jinoo\Desktop\CS\CS50\cs50_submit\jinook929> git branch
+* web50/projects/2020/x/search
+  web50/projects/2020/x/wiki
+PS C:\Users\jinoo\Desktop\CS\CS50\cs50_submit\jinook929> git checkout web50/projects/2020/x/wiki
+Switched to branch 'web50/projects/2020/x/wiki'
+PS C:\Users\jinoo\Desktop\CS\CS50\cs50_submit\jinook929> git branch
+  web50/projects/2020/x/search
+* web50/projects/2020/x/wiki
+PS C:\Users\jinoo\Desktop\CS\CS50\cs50_submit\jinook929> git add .
+PS C:\Users\jinoo\Desktop\CS\CS50\cs50_submit\jinook929> git commit -m "upload project1 files"
+[web50/projects/2020/x/wiki 60a1543] upload project1 files
+ 51 files changed, 772 insertions(+), 293 deletions(-)
+PS C:\Users\jinoo\Desktop\CS\CS50\cs50_submit\jinook929> git push --set-upstream origin web50/projects/2020/x/wiki
+Enumerating objects: 58, done.
+Counting objects: 100% (58/58), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (53/53), done.
+Writing objects: 100% (57/57), 15.70 KiB | 3.14 MiB/s, done.
+Total 57 (delta 9), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (9/9), done.
+remote:
+remote: Create a pull request for 'web50/projects/2020/x/wiki' on GitHub by visiting:
+remote:      https://github.com/me50/jinook929/pull/new/web50/projects/2020/x/wiki
+remote:
+To https://github.com/me50/jinook929.git
+ * [new branch]      web50/projects/2020/x/wiki -> web50/projects/2020/x/wiki
+Branch 'web50/projects/2020/x/wiki' set up to track remote branch 'web50/projects/2020/x/wiki' from 'origin'.
+PS C:\Users\jinoo\Desktop\CS\CS50\cs50_submit\jinook929>
+
+=====================================================================
+
 ~/Desktop/Jinook/CS50 Web Programming_2020/week0/project0/search
 $ git clone https://github.com/me50/jinook929.git
 

@@ -3,6 +3,7 @@
 
 ### Custom Files ###
 **/src*/
+**/submit/
 
 ### Django ###
 *.log
