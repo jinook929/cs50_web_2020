@@ -1,0 +1,92 @@
+1. Create django project
+django-admin startproject [project name]
+
+{Optional: Rename project folder to ["project name"-project]}
+2. Go to the project directory
+
+3. Create app in the project
+python manage.py startapp [app name]
+
+4. Add the app in settings.py
+INSTALLED_APPS = [
+    '[new app]',
+    ...,
+]
+
+5. Add the app url to urls.py
+from django.urls import *include,* path
+
+urlpatterns = [
+    ...,
+    path("[app name]/", include("[app name].urls")),
+]
+
+6. Create urls.py in the app's folder
+from django.urls import path
+
+from . import views
+
+urlpatterns = [
+    path("", views.index, name="index"),
+    path("[your url]/", views.[your url], name="[your url]"),
+    ...
+]
+
+7. Edit models.py
+...
+class [your model name capitalized](models.Model):
+    [parameter 1] = models.[type of field: eg. *CharField(max_length=64)*]
+    [parameter 2] = models.[type of field: eg. *CharField(max_length=64)*]
+    [parameter 3] = models.[type of field: eg. *IntegerField()*]
+
+8. Add string representation of model
+...
+class ...
+    ...
+    def __str__(self):
+        return [string representation: eg. *f"{slef.city} ({self.code})"*]
+
+9. Join tables(=classes)
+class [your model name capitalized](models.Model):
+    [parameter 1] = models.ForeignKey([joining class name], on_delete=models.CASCADE, related_name="[related name: eg. *departures*]")
+    [parameter 2] = models.ForeignKey([joining class name], on_delete=models.CASCADE, related_name="[related name: eg. *arrivals*]")
+    [parameter 3] = models.[type of field: eg. *IntegerField()*]
+
+    ...
+    def __str__(self):
+        return [string representation: eg. *f"Flight {self.id} : {self.origin} to {self.destination}"*]
+
+10. Migrate changes of models.py
+python manage.py makemigrations
+
+11. Apply the migrations
+python manage.py migrate
+
+12. Enter shell to check class model and manipulate it
+python manage.py shell
+- Import class: from [app name].models import [class model name]
+- Instantiate model object: [object name] = [class model name]([parameters & values: eg. *origin="Paris", destination="London", duration=80*])
+- Save instantiated object: [object name].save()
+- Check all objects (Query Set): [class model name].objects.all()
+- Check first object (Object): [class model name].objects.all().first()
+- Check specific objects (Query Set): [class model name].objects.filter([condition: eg. *origin="Paris"*])
+- Check specific object (Object): [class model name].objects.get([condition: eg. *origin="Paris"*])
+- Delete instantiated object: [object name].delete()
+
+13. Create view for the new url in views.py
+from django.shortcuts import render
+
+from .models import *
+
+def [view name: eg. *index*](request):
+    return render(request, "flights/index.html", {
+        "flights": Flight.objects.all(),
+        "airports": Airport.objects.all(),
+    })
+
+14. Because of using "render", create html file
+- Create "templates" folder under your app folder
+- Create [your app] folder under "templates" folder
+- Create layout.html file, using "{% block body %}{% endblock %}"
+- Create [view name].html file, using "{% extends "[your app name]/layout.html" %}" & "{% block body %}{% endblock %}"
+
