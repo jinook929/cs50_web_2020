@@ -84,9 +84,24 @@ def [view name: eg. *index*](request):
         "airports": Airport.objects.all(),
     })
 
-14. Because of using "render", create html file
+14. Using "render", create html files
 - Create "templates" folder under your app folder
 - Create [your app] folder under "templates" folder
 - Create layout.html file, using "{% block body %}{% endblock %}"
 - Create [view name].html file, using "{% extends "[your app name]/layout.html" %}" & "{% block body %}{% endblock %}"
+
+15. Create admin account for django
+python manage.py createsuperuser
+
+16. Register models in admin.py
+from django.contrib import admin
+
+from .models import *
+
+admin.site.register(Airport)
+admin.site.register(Flight)
+
+17. Login and manipulate the models in ./admin page
+
+
 
