@@ -1,0 +1,34 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Create a new listing</h2>
+
+    <!-- <form action="{% url 'newListing' %}" method="POST"></form>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-primary" type="submit">List the Item</button>
+    </form> -->
+
+    <form action="{% url 'newListing' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <input class="form-control" autofocus type="text" name="name" placeholder="Item Name">
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="text" name="category" placeholder="Category (optional)">
+        </div>
+        <div class="form-group">
+            <input type="file" name="image" placeholder="Item Image (optional)">
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="text" name="description" placeholder="Description">
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="number" name="price" placeholder="Starting Bid">
+        </div>
+        <input class="btn btn-primary" type="submit" value="List the Item">
+    </form>
+
+    <div><a href="{% url 'index' %}">Back to listing</a></div>
+    
+{% endblock %}

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models.fields import IntegerField
+from django.utils import timezone
 
 
 class User(AbstractUser):
@@ -11,12 +12,13 @@ class User(AbstractUser):
 
 class Listing(models.Model):
     name = models.CharField(max_length=64)
-    image = models.ImageField(upload_to='images/')
-    description = models.CharField(max_length=255)
+    category = models.CharField(max_length=64, blank=True)
+    image = models.ImageField(upload_to='images/', null=True, blank=True)
+    description = models.TextField()
     price = models.IntegerField()
     lister = models.ForeignKey(User, on_delete=models.CASCADE, related_name="lister")
     created_at = models.DateTimeField(auto_now_add=True)
-    watched = models.ForeignKey(User, on_delete=models.CASCADE, related_name="watching")
+    watched = models.ForeignKey(User, on_delete=models.CASCADE, related_name="watching", null=True, blank=True)
 
     def __str__(self):
         return f"Listing: {self.name}"

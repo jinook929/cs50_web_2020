@@ -3,5 +3,26 @@
 {% block body %}
     <h2>Active Listings</h2>
 
-    TODO
+    {% if request.user.is_authenticated %}
+        <a href="{% url 'newListing' %}">Create a new listing</a>
+        <hr>
+    {% else %}
+        <p>Please log in first to see active listings.</p>
+    {% endif %}
+
+    <div>
+        {% for listing in listings %}
+            <h4>Title: {{ listing.name }}</h4>
+            <p>Current Price: ${{ listing.price }}</p>
+            <h5>Description{% if listing.category %} [Category -> {{ listing.category }}]{% endif %}:</h5>
+            <p>{{ listing.description }}</p>
+            {% if listing.image %}
+            <img src="{{ listing.image.url }}" alt="">
+            {% endif %}
+            <p><em>{{ listing.created_at }}</em></p>
+            <hr>
+        {% empty %}
+            <li>No listings to show</li>
+        {% endfor %}
+    </div>
 {% endblock %}

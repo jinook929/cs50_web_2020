@@ -1,14 +1,28 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from .models import User
+from .models import *
+from .forms import ListingForm
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+    useritems = []
+    username = request.user.username
+    
+    print(f"Logged in as {request.user.username}")
+    for object in Listing.objects.all():
+        lister = object.lister.username
+        if lister == username:            
+            useritems.append(object)
+            print(f"{object} added")
+
+    print(useritems)
+    return render(request, "auctions/index.html", {
+        "listings": useritems,
+    })
 
 
 def login_view(request):
@@ -61,3 +75,17 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+def newListing(request):
+    if request.method == "POST":
+        form = ListingForm(request.POST)
+        newlisting = form.save(commit=False)
+        user = User.objects.get(username=request.user.username)
+        newlisting.lister = user
+        newlisting.save()
+        
+        return redirect('index')
+
+    return render(request, "auctions/newListing.html", {
+        'form': ListingForm(),
+    })
