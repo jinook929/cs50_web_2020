@@ -2,6 +2,7 @@
 
 {% block body %}
     <h2>Create a new listing</h2>
+    <h5>{{ submessage }}</h5>
 
     <!-- <form action="{% url 'newListing' %}" method="POST"></form>
         {% csrf_token %}
@@ -12,19 +13,26 @@
     <form action="{% url 'newListing' %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
-            <input class="form-control" autofocus type="text" name="name" placeholder="Item Name">
+            <input class="form-control" autofocus type="text" name="name" placeholder="Item Name (required)">
+        </div>
+        <label for="cars">Choose a ctegory:</label>
+        <select name="category" id="category">
+            <option value=""></option>
+            <option value="fashion">Fashion</option>
+            <option value="toys">Toys</option>
+            <option value="electronics">Electronics</option>
+            <option value="home">Home</option>
+            <option value="food">Food</option>
+            <option value="etc">ETC</option>
+        </select> (optional)
+        <div class="form-group">
+            <input type="file" name="image" accept="image/png, image/jpeg, image/jpg" style="border: 1px solid gray; border-radius: 10px;" > (optional)
         </div>
         <div class="form-group">
-            <input class="form-control" type="text" name="category" placeholder="Category (optional)">
+            <input class="form-control" type="text" name="description" placeholder="Description (required)">
         </div>
         <div class="form-group">
-            <input type="file" name="image" placeholder="Item Image (optional)">
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="text" name="description" placeholder="Description">
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="number" name="price" placeholder="Starting Bid">
+            <input class="form-control" type="number" name="price" placeholder="Starting Bid (required)">
         </div>
         <input class="btn btn-primary" type="submit" value="List the Item">
     </form>

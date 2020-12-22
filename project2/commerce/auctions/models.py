@@ -21,7 +21,7 @@ class Listing(models.Model):
     watched = models.ForeignKey(User, on_delete=models.CASCADE, related_name="watching", null=True, blank=True)
 
     def __str__(self):
-        return f"Listing: {self.name}"
+        return f"Listing: {self.name} [{self.lister.username}]"
 
 
 class Bid(models.Model):

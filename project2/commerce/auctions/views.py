@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.core import exceptions
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
@@ -9,19 +10,26 @@ from .forms import ListingForm
 
 
 def index(request):
+    if not request.user.username:
+        return render(request, "auctions/index.html")
+    # tmp = User.objects.get(username=user)
+    return render(request, "auctions/index.html", {
+        "listings": Listing.objects.order_by("-created_at").exclude(lister=User.objects.get(username=request.user.username)).all(),
+        "message": "Active Listings",
+    })
+
+
+def mylistings(request):
     useritems = []
     username = request.user.username
-    
-    print(f"Logged in as {request.user.username}")
-    for object in Listing.objects.all():
+    for object in Listing.objects.order_by("-created_at").all():
         lister = object.lister.username
         if lister == username:            
             useritems.append(object)
-            print(f"{object} added")
 
-    print(useritems)
     return render(request, "auctions/index.html", {
         "listings": useritems,
+        "message": "My Listings",
     })
 
 
@@ -76,16 +84,38 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
+
 def newListing(request):
     if request.method == "POST":
-        form = ListingForm(request.POST)
-        newlisting = form.save(commit=False)
-        user = User.objects.get(username=request.user.username)
-        newlisting.lister = user
+
+        # form = ListingForm(request.POST)
+        # newlisting = form.save(commit=False)
+        # user = User.objects.get(username=request.user.username)
+        # newlisting.lister = user
+        # newlisting.save()
+
+        newlisting = Listing()
+
+        if not request.POST['name'] or not request.POST['description'] or not request.POST['price']:
+            return render(request, "auctions/newListing.html", {
+                'form': ListingForm(),
+                'submessage': "*** Fill in the required boxes ***"
+            })
+
+        newlisting.name = request.POST['name']
+        newlisting.category = request.POST['category']
+        newlisting.description = request.POST['description']
+        newlisting.price = request.POST['price']
+        try:
+            newlisting.image = request.FILES['image']
+        except:
+            pass
+        newlisting.lister = User.objects.get(username=request.user.username)
         newlisting.save()
         
-        return redirect('index')
+        return redirect('mylistings')
 
     return render(request, "auctions/newListing.html", {
         'form': ListingForm(),
     })
+
