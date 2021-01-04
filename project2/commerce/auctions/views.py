@@ -1,12 +1,14 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.core import exceptions
 from django.db import IntegrityError
+from django.db.models import fields
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
 from .models import *
-from .forms import ListingForm
+from .forms import *
 
 
 def index(request):
@@ -19,6 +21,7 @@ def index(request):
     })
 
 
+@login_required(login_url='login')
 def mylistings(request):
     useritems = []
     username = request.user.username
@@ -68,7 +71,8 @@ def register(request):
         confirmation = request.POST["confirmation"]
         if password != confirmation:
             return render(request, "auctions/register.html", {
-                "message": "Passwords must match."
+                "message": "Passwords must match.",
+                'form': RegisterForm(),
             })
 
         # Attempt to create new user
@@ -82,7 +86,9 @@ def register(request):
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:
-        return render(request, "auctions/register.html")
+        return render(request, "auctions/register.html", {
+            'form': RegisterForm(),
+        })
 
 
 def newListing(request):

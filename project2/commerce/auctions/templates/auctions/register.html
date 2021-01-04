@@ -1,14 +1,39 @@
 {% extends "auctions/layout.html" %}
 
+{% load crispy_forms_tags %}
+
 {% block body %}
 
     <h2>Register</h2>
 
-    {% if message %}
-        <div><h4>{{ message }}</h4></div>
-    {% endif %}
+    <form action="{% url 'register' %}" method="POST">
+        {% csrf_token %}
+        {{ form|crispy }}
+        {% if message %}
+            <div><strong>{{ message }}</strong></div><br>
+        {% endif %}
+         <button class="btn btn-primary" type="submit">Register</button>
+    </form>
 
-    <form action="{% url 'register' %}" method="post">
+    {% comment %} <form action="{% url 'test' %}" method="POST">
+        {% csrf_token %}
+        {{ tform|crispy }}
+         <button class="btn btn-primary" type="submit">TEST</button>
+    </form> {% endcomment %}
+
+    <!-- <form action="{% url 'register' %}" method="POST">
+        {% csrf_token %}
+        <div class="col-6">{{ form.username|as_crispy_field }}</div>
+        <div class="col-6">{{ form.email|as_crispy_field }}</div>
+        <div class="col-6">{{ form.password|as_crispy_field }}</div>
+        <div class="col-6">{{ form.confirmation|as_crispy_field }}</div>
+        {% if message %}
+            <div><strong>{{ message }}</strong></div><br>
+        {% endif %}
+         <button class="btn btn-primary" type="submit">Register</button>
+    </form> -->
+
+    <!-- <form action="{% url 'register' %}" method="post">
         {% csrf_token %}
         <div class="form-group">
             <input class="form-control" autofocus type="text" name="username" placeholder="Username">
@@ -21,10 +46,13 @@
         </div>
         <div class="form-group">
             <input class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
-        </div>
+        </div>        
+        {% if message %}
+            <div><strong>{{ message }}</strong></div><br>
+        {% endif %}
         <input class="btn btn-primary" type="submit" value="Register">
-    </form>
+    </form> -->
 
-    Already have an account? <a href="{% url 'login' %}">Log In here.</a>
+    <br>Already have an account? <a href="{% url 'login' %}">Log In here.</a>
 
 {% endblock %}
