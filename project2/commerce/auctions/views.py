@@ -186,22 +186,44 @@ def listing(request, id):
         watchingArr = []
 
     target = Listing.objects.get(id=id)
-    try:
-        startWatching = User.objects.get(username=request.user.username)
-        try:
-            currentUser = target.watched.all().get(username=request.user.username)
-            target.watched.remove(currentUser)
-        except:
-            target.watched.add(startWatching)
+
+    if request.method == "POST":
+        bidbox = int(request.POST["bidbox"])
+        print(f"Bidding of ${bidbox}")
+        if bidbox <= target.price:
+            return render(request, "auctions/listing.html", {
+                "item": Listing.objects.get(id=id),
+                "watching": watchingArr,
+                "watchedItemsNum": watchedItemsNum,
+                "message": "New bidding should be higher than the current one."
+            })
+        else:
+            target.price = bidbox
             target.save()
-    except:
-        pass
+
+        return render(request, "auctions/listing.html", {
+            "item": Listing.objects.get(id=id),
+            "watching": watchingArr,
+            "watchedItemsNum": watchedItemsNum,
+        })
 
     return render(request, "auctions/listing.html", {
         "item": Listing.objects.get(id=id),
         "watching": watchingArr,
         "watchedItemsNum": watchedItemsNum,
     })
+
+    # target = Listing.objects.get(id=id)
+    # try:
+    #     startWatching = User.objects.get(username=request.user.username)
+    #     try:
+    #         currentUser = target.watched.all().get(username=request.user.username)
+    #         target.watched.remove(currentUser)
+    #     except:
+    #         target.watched.add(startWatching)
+    #         target.save()
+    # except:
+    #     pass
 
 
 def watchlist(request):
