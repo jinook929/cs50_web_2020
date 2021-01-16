@@ -24,7 +24,7 @@ class ListingForm(forms.Form):
     name = forms.CharField(
         label='Item Name',
         max_length=100, 
-        widget= forms.TextInput(attrs={'placeholder':'required'}),
+        widget= forms.TextInput(attrs={'placeholder':'What do you want to list?'}),
     )
     category = forms.ChoiceField(
         required=False,
@@ -34,11 +34,11 @@ class ListingForm(forms.Form):
     image = forms.ImageField(required=False,)
     description = forms.CharField(
         label="",        
-        widget=forms.Textarea(attrs={'placeholder':'Item Description (required)', "rows":5, "cols":50})
+        widget=forms.Textarea(attrs={'placeholder':'Item Descriptions', "rows":5, "cols":50})
     )
     price = forms.IntegerField(
         label='Starting Bid', 
-        widget=forms.NumberInput(attrs={'placeholder':' required'}),
+        widget=forms.NumberInput(attrs={'placeholder':' Your desired starting price here'}),
     )
 
 class RegisterForm(forms.Form):

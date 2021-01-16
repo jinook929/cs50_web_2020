@@ -3,22 +3,22 @@ from django.db import models
 from django.db.models.fields import IntegerField
 from django.utils import timezone
 
-
 class User(AbstractUser):
     
     def __str__(self):
-        return f"Username: {self.username}"
+        return f"{self.username} [ID#{self.id}]"
 
 
 class Listing(models.Model):
     name = models.CharField(max_length=64)
-    category = models.CharField(max_length=64, blank=True)
     image = models.ImageField(upload_to='images/', null=True, blank=True)
-    description = models.TextField()
-    price = models.IntegerField()
+    description = models.TextField(blank=True)
+    price = models.DecimalField(decimal_places=2,max_digits=50)
+    bidcount = models.IntegerField(default=0)
     lister = models.ForeignKey(User, on_delete=models.CASCADE, related_name="lister")
+    category = models.CharField(max_length=64, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    watched = models.ForeignKey(User, on_delete=models.CASCADE, related_name="watching", null=True, blank=True)
+    watched = models.ManyToManyField(User, blank=True, related_name="watching")
 
     def __str__(self):
         return f"Listing: {self.name} [{self.lister.username}]"
@@ -39,4 +39,4 @@ class Comment(models.Model):
     commenter = models.ForeignKey(User, on_delete=models.CASCADE, related_name="commenter")
 
     def __str__(self):
-        return f"{self.commenter} commented on {self.item}"
+        return f"{self.commenter.username} commented on {self.item}"

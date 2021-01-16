@@ -6,21 +6,17 @@
 
     <h2>Register</h2>
 
+    <!-- form with django form & bootstrap -->
     <form action="{% url 'register' %}" method="POST">
         {% csrf_token %}
         {{ form|crispy }}
         {% if message %}
             <div><strong>{{ message }}</strong></div><br>
         {% endif %}
-         <button class="btn btn-primary" type="submit">Register</button>
+         <button class="btn btn-primary btn-block" type="submit">Register</button>
     </form>
 
-    {% comment %} <form action="{% url 'test' %}" method="POST">
-        {% csrf_token %}
-        {{ tform|crispy }}
-         <button class="btn btn-primary" type="submit">TEST</button>
-    </form> {% endcomment %}
-
+    <!-- form with django form & bootstrap, each line -->
     <!-- <form action="{% url 'register' %}" method="POST">
         {% csrf_token %}
         <div class="col-6">{{ form.username|as_crispy_field }}</div>
@@ -33,6 +29,7 @@
          <button class="btn btn-primary" type="submit">Register</button>
     </form> -->
 
+    <!-- form with bootstrap, but without django form -->
     <!-- <form action="{% url 'register' %}" method="post">
         {% csrf_token %}
         <div class="form-group">

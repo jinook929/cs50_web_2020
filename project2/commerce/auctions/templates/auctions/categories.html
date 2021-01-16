@@ -1,0 +1,15 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div class="d-flex justify-content-around">
+    {% for category in categories %}
+        {% if category != "" %}
+            <span>
+                <a href="{% url 'categoryListings' category %}">
+                    <button class="btn btn-light" type="submit" value="{{ category }}">{{ category }}</button>
+                </a>
+            </span>
+        {% endif %}
+    {% endfor %}
+    </div>
+{% endblock %}

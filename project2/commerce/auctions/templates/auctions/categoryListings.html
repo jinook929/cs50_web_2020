@@ -1,0 +1,40 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div class="d-flex justify-content-around">
+    {% for category in categories %}
+        {% if category != "" %}
+            <span>
+                <a href="{% url 'categoryListings' category %}">
+                    <button class="btn btn-light" type="submit" value="{{ category }}">{{ category }}</button>
+                </a>
+            </span>
+        {% endif %}
+    {% endfor %}
+    </div>
+
+    <h2>{{ category }} Listings</h2>
+    
+    <div>
+        {% for listing in listings %}
+            <div class="card mb-3" style="max-width: 100%;">
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                        {% if listing.image %}
+                            <img src="{{ listing.image.url }}" class="card-img" alt="{{ listing.name }}">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h4 class="card-title"><a href="{% url 'listing' listing.id %}">{{ listing.name }}</a></h4>
+                            <h6 class="card-text">Price: ${{ listing.price }}</h6>
+                            <p class="card-text"><small class="text-muted">Created {{ listing.created_at }}</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <li>No listings to show</li>
+        {% endfor %}
+    </div>
+{% endblock %}

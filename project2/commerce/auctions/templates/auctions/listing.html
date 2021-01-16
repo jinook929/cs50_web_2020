@@ -1,0 +1,42 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}    
+    <h2>Listing: {{ item.name }}
+    {% if user.is_authenticated and item.lister.username != request.user.username and request.user.username in watching %}
+        <a href="{% url 'watchlistToggle' item.name %}"><button class="btn btn-dark btn-sm">Watchlist</button></a>
+    {% elif user.is_authenticated and item.lister.username != request.user.username %}
+        <a href="{% url 'watchlistToggle' item.name %}"><button class="btn btn-light btn-sm">Watchlist</button></a>
+    {% endif %}
+    </h2>
+    <div>
+        {% if item.image %}
+            <img src="{{ item.image.url }}" style="max-width: 75%; max-height: 400px" alt="">
+        {% endif %}
+        <p>{{ item.description }}</p>
+        <h3>${{ item.price }}</h3>
+        {% if request.user.is_authenticated %}
+            <p>{{ item.bidcount }} bid(s) so far. 
+            {% if not item.lister.username == request.user.username%}
+                <span>Yor bid is the current bid.</span>
+            </p>
+            <div>
+                <input type="text" name="bidbox" id="bidbox" placeholer="Bid">
+            </div>
+            <br>
+            <div>
+               <input class="btn btn-primary" type="submit" value="Place Bid"> 
+            </div>
+            {% endif %}
+        {% endif %}
+        <h4>Details</h4>
+        <ul>
+            {% if request.user.is_authenticated and item.lister.username == request.user.username %}
+            <li>Listed by: You (<a href="{% url 'listingsByLister' item.lister.username %}">{{ item.lister.username }}</a>)</li>
+            {% else %}
+            <li>Listed by: <a href="{% url 'listingsByLister' item.lister.username %}">{{ item.lister.username }}</a></li>
+            {% endif %}
+            <li>Category: {% if item.category %} <span>{{ item.category }}</span> {% else %} No Category Listed {% endif %}</li>
+        </ul>
+        <hr>
+    </div>
+{% endblock %}

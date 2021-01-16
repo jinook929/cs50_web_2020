@@ -12,28 +12,19 @@ from .forms import *
 
 
 def index(request):
-    if not request.user.username:
-        return render(request, "auctions/index.html")
-    # tmp = User.objects.get(username=user)
-    return render(request, "auctions/index.html", {
-        "listings": Listing.objects.order_by("-created_at").exclude(lister=User.objects.get(username=request.user.username)).all(),
-        "message": "Active Listings",
-    })
+    watchedItemsNum = 0
+    try:
+        watcher = User.objects.get(username=request.user.username)
+        watchedItems = Listing.objects.filter(watched=watcher)
+        watchedItemsNum = len(watchedItems)
+    except:
+        pass
 
-
-@login_required(login_url='login')
-def mylistings(request):
-    useritems = []
-    username = request.user.username
-    for object in Listing.objects.order_by("-created_at").all():
-        lister = object.lister.username
-        if lister == username:            
-            useritems.append(object)
-
-    return render(request, "auctions/index.html", {
-        "listings": useritems,
-        "message": "My Listings",
-    })
+    context = {
+        "listings": Listing.objects.order_by("-created_at").all(),
+        "watchedItemsNum": watchedItemsNum,
+    }
+    return render(request, "auctions/index.html", context)
 
 
 def login_view(request):
@@ -56,6 +47,7 @@ def login_view(request):
         return render(request, "auctions/login.html")
 
 
+@login_required(login_url='login')
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
@@ -81,6 +73,7 @@ def register(request):
             user.save()
         except IntegrityError:
             return render(request, "auctions/register.html", {
+                'form': RegisterForm(),
                 "message": "Username already taken."
             })
         login(request, user)
@@ -91,7 +84,55 @@ def register(request):
         })
 
 
+def categories(request):
+    watchedItemsNum = 0
+    try:
+        watcher = User.objects.get(username=request.user.username)
+        watchedItems = Listing.objects.filter(watched=watcher)
+        watchedItemsNum = len(watchedItems)
+    except:
+        pass
+    context = {
+        "categories": [],
+        "watchedItemsNum": watchedItemsNum,
+    }
+
+    for category in CATEGORY_CHOICES:
+        context["categories"].append(category[0])
+
+    return render(request, "auctions/categories.html", context)
+
+
+def categoryListings(request, category):
+    watchedItemsNum = 0
+    try:
+        watcher = User.objects.get(username=request.user.username)
+        watchedItems = Listing.objects.filter(watched=watcher)
+        watchedItemsNum = len(watchedItems)
+    except:
+        pass
+    
+    listings = Listing.objects.order_by("-created_at").all().filter(category=category)
+    context = {
+        "categories": [],
+        "category": category,
+        "listings": listings,
+        "watchedItemsNum": watchedItemsNum,
+    }
+    for category in CATEGORY_CHOICES:
+        context["categories"].append(category[0])
+
+    return render(request, "auctions/categoryListings.html", context)
+
+
 def newListing(request):
+    watchedItemsNum = 0
+    try:
+        watcher = User.objects.get(username=request.user.username)
+        watchedItems = Listing.objects.filter(watched=watcher)
+        watchedItemsNum = len(watchedItems)
+    except:
+        pass
     if request.method == "POST":
 
         # form = ListingForm(request.POST)
@@ -119,9 +160,77 @@ def newListing(request):
         newlisting.lister = User.objects.get(username=request.user.username)
         newlisting.save()
         
-        return redirect('mylistings')
+        return render(request, 'auctions/listing.html', { "item": Listing.objects.get(name=newlisting.name) })
 
     return render(request, "auctions/newListing.html", {
         'form': ListingForm(),
+        'watchedItemsNum': watchedItemsNum,
     })
 
+def listing(request, id):
+    watchedItemsNum = 0
+    try:
+        watcher = User.objects.get(username=request.user.username)
+        watchedItems = Listing.objects.filter(watched=watcher)
+        watchedItemsNum = len(watchedItems)
+    except:
+        pass
+
+    try:
+        watchingUsers = User.objects.filter(watching=Listing.objects.get(id=id).id)
+        print(watchingUsers)
+        watchingArr = []
+        for user in watchingUsers:
+            watchingArr.append(user.username)
+    except:
+        watchingArr = []
+
+    target = Listing.objects.get(id=id)
+    try:
+        startWatching = User.objects.get(username=request.user.username)
+        try:
+            currentUser = target.watched.all().get(username=request.user.username)
+            target.watched.remove(currentUser)
+        except:
+            target.watched.add(startWatching)
+            target.save()
+    except:
+        pass
+
+    return render(request, "auctions/listing.html", {
+        "item": Listing.objects.get(id=id),
+        "watching": watchingArr,
+        "watchedItemsNum": watchedItemsNum,
+    })
+
+
+def watchlist(request):
+    watchedItemsNum = 0
+    try:
+        watcher = User.objects.get(username=request.user.username)
+        watchedItems = Listing.objects.filter(watched=watcher)
+        watchedItemsNum = len(watchedItems)
+    except:
+        pass
+
+    context = {
+        "watchedItemsNum": watchedItemsNum,
+        "listings": Listing.objects.filter(watched=User.objects.get(username=request.user.username))
+    }
+    return render(request, 'auctions/watchlist.html', context)
+
+
+def watchlistToggle(request):
+    context ={
+        "item": Listing.objects.get(name="Yoyo")
+    }
+    return render(request, 'auctions/listing.html', context)
+
+
+def listingsByLister(request, lister):
+    username = User.objects.get(username=lister)
+    context = {
+        "lister": lister,
+        "listings": Listing.objects.filter(lister=username).order_by("-created_at").all(),
+    }
+    return render(request, 'auctions/listingsByLister.html', context)
