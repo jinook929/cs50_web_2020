@@ -1,8 +1,17 @@
-<h1> test </h1>
-<p>Test worked!!!</p>
+{% extends "auctions/layout.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block body %}
+
+<h1> Closed Listings </h1>
+
 {% for item in items%}
-    <div>
-        {{ item.id}}. {{ item.name }}
+    <div class="lead">
+        <p>=> <a href="{% url 'listing' item.id %}">{{ item.id}}. <strong>{{ item.name }}</strong></a></p>
+        <p><small class="text-muted">won by {{ item.winner }}</small></p>
     </div>
     <br>
 {% endfor %}
+
+{% endblock %}

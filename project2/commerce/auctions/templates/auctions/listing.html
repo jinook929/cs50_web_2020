@@ -5,9 +5,14 @@
 {% block body %}    
     <h2>Listing: {{ item.name }}
     {% if user.is_authenticated and item.lister.username != request.user.username and request.user.username in watching %}
-        <a href="{% url 'watchlistToggle' item.name %}"><button class="btn btn-dark btn-sm">Watchlist</button></a>
+        <form action="{% url 'listing' item.id%}" method="POST">
+            {% csrf_token %}<button class="btn btn-dark btn-sm" name="watchbtn" type="submit" value="unwatch">Watchlist</button>
+        </form>
     {% elif user.is_authenticated and item.lister.username != request.user.username %}
-        <a href="{% url 'watchlistToggle' item.name %}"><button class="btn btn-light btn-sm">Watchlist</button></a>
+        <form action="{% url 'listing' item.id%}" method="POST">
+            {% csrf_token %}
+            <button class="btn btn-light btn-sm" name="watchbtn" type="submit" value="watch">Watchlist</button>
+        </form>
     {% endif %}
     </h2>
     <div>
@@ -19,8 +24,10 @@
             <p>{{ item.bidcount }} bid(s) so far. 
             {% if request.user.is_authenticated and item.lastbidding_by == request.user.username %}
             <span>Your bid is the current bid.</span></p>
-            {% elif item.lastbidding_by %}
+            {% elif item.lastbidding_by and not item.is_closed %}
             <span>The current bid has been made by [ {{ item.lastbidding_by }} ].</span></p>
+            {% elif  item.lastbidding_by and item.is_closed %}
+            <span><strong>This listing has been closed.</strong></span></p>
             {% endif %}
 
         <!-- Show Bid box and button only when logged in & user is not lister & not closed -->
@@ -99,7 +106,7 @@
         <table class="table">
             <thead>
                 <tr>
-                <th scope="col">No Comments Yet.</th>
+                <th scope="col">No Comments Yet...</th>
                 </tr>
             </thead>
         </table>

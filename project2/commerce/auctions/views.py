@@ -191,8 +191,9 @@ def listing(request, id):
     target = Listing.objects.get(id=id)
     comments = Comment.objects.all().order_by("-created_at").filter(item=Listing.objects.get(id=id))
 
-    # Update database based on bidding
+    # When method is POST
     if request.method == "POST":
+    # Update database based on bidding
         try:
             bidbox = int(request.POST["bidbox"])
             message = ""
@@ -230,24 +231,28 @@ def listing(request, id):
             pass
 
         # Update database based on closing
-        if request.POST["close"]:
-            target.is_closed = True
-            target.winner = target.lastbidding_by
-            message = f"Congratulations, {target.winner} !!! You are won this item."
-            target.save()
+        try:
+            if request.POST["close"]:
+                target.is_closed = True
+                target.winner = target.lastbidding_by
+                target.watched.remove(User.objects.get(username=target.winner))
+                message = f"Congratulations, {target.winner} !!! You are won this item."
+                target.save()
 
-            context = {
-                "item": target,
-                "watching": watchingArr,
-                "watchedItemsNum": watchedItemsNum,
-                "comments": comments,
-                "form": CommentForm(),
-                "winner": target.winner
-            }
-            if target.bidcount < 1:
-                context["winner"] = "No one"
+                context = {
+                    "item": target,
+                    "watching": watchingArr,
+                    "watchedItemsNum": watchedItemsNum,
+                    "comments": comments,
+                    "form": CommentForm(),
+                    "winner": target.winner
+                }
+                if target.bidcount < 1:
+                    context["winner"] = "No one"
+                    return render(request, "auctions/listing.html", context)
                 return render(request, "auctions/listing.html", context)
-            return render(request, "auctions/listing.html", context)
+        except:
+            pass
         
         # Update database based on commenting
         try:
@@ -259,6 +264,40 @@ def listing(request, id):
         except:
             pass
 
+        # Update database based on watchlist button
+        if request.POST["watchbtn"]:
+            if request.POST["watchbtn"] == "watch":
+                target.watched.add(User.objects.get(username=request.user.username))
+                target.save()
+                watchedItemsNum += 1
+                print("Start watching!!!")
+
+                # context = {
+                #     "item": target,
+                #     "watching": watchingArr,
+                #     "watchedItemsNum": watchedItemsNum,
+                #     "comments": comments,
+                #     "form": CommentForm(),
+                # }
+            else:
+                target.watched.remove(User.objects.get(username=request.user.username))
+                target.save()
+                watchedItemsNum -= 1
+                print("Stop watching")
+
+                # context = {
+                #     "item": target,
+                #     "watching": watchingArr,
+                #     "watchedItemsNum": watchedItemsNum,
+                #     "comments": comments,
+                #     "form": CommentForm(),
+                # }
+            return render(request, "auctions/watchlist.html", {
+                "watchedItemsNum": watchedItemsNum,
+                "listings": Listing.objects.filter(watched=User.objects.get(username=request.user.username))
+            })
+
+    # When method is GET
     return render(request, "auctions/listing.html", {
         "item": Listing.objects.get(id=id),
         "watching": watchingArr,
@@ -297,8 +336,8 @@ def winlist(request):
     
     try:
         closedListings = Listing.objects.filter(is_closed=True)
-        winlistings = []
-        winlistings.append(closedListings.get(winner=request.user.username))
+        print(closedListings)
+        winlistings = closedListings.filter(winner=request.user.username)
         print(winlistings)
     except:
         print("winlistings = []")
@@ -312,13 +351,6 @@ def winlist(request):
     return render(request, 'auctions/winlist.html', context)
 
 
-def watchlistToggle(request):
-    context ={
-        "item": Listing.objects.get(name="Yoyo")
-    }
-    return render(request, 'auctions/listing.html', context)
-
-
 def listingsByLister(request, lister):
     username = User.objects.get(username=lister)
     context = {
@@ -326,6 +358,7 @@ def listingsByLister(request, lister):
         "listings": Listing.objects.filter(lister=username).order_by("-created_at").all(),
     }
     return render(request, 'auctions/listingsByLister.html', context)
+
 
 def test(request):
     items = Listing.objects.filter(is_closed=True).order_by("-created_at")    
