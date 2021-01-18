@@ -21,7 +21,7 @@
                 <div class="row no-gutters">
                     <div class="col-md-4">
                         {% if listing.image %}
-                            <img src="{{ listing.image.url }}" class="card-img" alt="{{ listing.name }}">
+                            <a href="{% url 'listing' listing.id %}"><img src="{{ listing.image.url }}" class="card-img" alt="{{ listing.name }}"></a>
                         {% endif %}
                     </div>
                     <div class="col-md-8">

@@ -58,3 +58,9 @@ class RegisterForm(forms.Form):
         max_length=100, 
         widget=forms.PasswordInput(attrs={'placeholder':'Confirm Password'}),
     )
+
+class CommentForm(forms.Form):
+    comment = forms.CharField(
+        label="Any Comment?",        
+        widget=forms.Textarea(attrs={"name":"comment", 'placeholder':'Your comment here.', "rows":3, "cols":50})
+    )

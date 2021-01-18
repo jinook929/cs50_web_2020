@@ -1,5 +1,7 @@
 {% extends "auctions/layout.html" %}
 
+{% load crispy_forms_tags %}
+
 {% block body %}    
     <h2>Listing: {{ item.name }}
     {% if user.is_authenticated and item.lister.username != request.user.username and request.user.username in watching %}
@@ -14,27 +16,54 @@
         {% endif %}
         <p>{{ item.description }}</p>
         <h3>${{ item.price }}</h3>
-        {% if request.user.is_authenticated %}
             <p>{{ item.bidcount }} bid(s) so far. 
-            {% if not item.lister.username == request.user.username%}
-                <span>Yor bid is the current bid.</span>
-            </p>
+            {% if request.user.is_authenticated and item.lastbidding_by == request.user.username %}
+            <span>Your bid is the current bid.</span></p>
+            {% elif item.lastbidding_by %}
+            <span>The current bid has been made by [ {{ item.lastbidding_by }} ].</span></p>
+            {% endif %}
 
-            <h6>{{ message }}</h6>
-            
+        <!-- Show Bid box and button only when logged in & user is not lister & not closed -->
+        {% if request.user.is_authenticated and item.lister.username != request.user.username and not item.is_closed %}
             <form action="{% url 'listing' item.id %}" method="POST">
                 {% csrf_token %}
                 <div>
-                    <input type="text" name="bidbox" id="bidbox" placeholer="Bid">
+                    <input type="text" name="bidbox" placeholder="Bid" required>
                 </div>
+                {% if message %}
+                <br>
+                <div class="card">
+                    <div class="card-header">
+                        {{ message }}
+                    </div>
+                </div>
+                {% endif %}
                 <br>
                 <div>
-                <input class="btn btn-primary" type="submit" value="Place Bid"> 
+                    <input class="btn btn-primary" type="submit" value="Place Bid"> 
                 </div>
             </form>
-
-            {% endif %}
         {% endif %}
+
+        <!-- Show close button only when logged in & closed -->
+        <!-- When user is winner-->
+        {% if request.user.is_authenticated and item.is_closed and item.winner == request.user.username %}
+            <button class="btn btn-lg btn-warning">Congratulation, {{ winner }}!!! You are the winner of this item.</button>
+        <!-- When user is not winner-->
+        {% elif request.user.is_authenticated and item.is_closed %}
+            <button class="btn btn-lg btn-warning">{{ winner }} is the winner of this item.</button>
+        {% endif %}
+
+        <!-- Show close button only when logged in & not closed & user is lister -->
+        {% if request.user.is_authenticated and not item.is_closed and item.lister.username == request.user.username %}
+            <form action="{% url 'listing' item.id %}" method="POST">
+                {% csrf_token %}
+                <button class="btn btn-primary" type="submit" name="close" value="True">Close the Deal</button>
+            </form>
+        {% endif %}
+
+        <br><br>
+
         <h4>Details</h4>
         <ul>
             {% if request.user.is_authenticated and item.lister.username == request.user.username %}
@@ -45,5 +74,35 @@
             <li>Category: {% if item.category %} <span>{{ item.category }}</span> {% else %} No Category Listed {% endif %}</li>
         </ul>
         <hr>
+        <form action="{% url 'listing' item.id %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button class="btn btn-primary btn-block" type="submit">Submit the Comment</button>
+        </form>
+        <br>
+        {% if comments %}
+        <table class="table">
+            <thead>
+                <tr>
+                <th scope="col">Comments</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for comment in comments %}
+                    <tr>
+                        <td><span class="lead">{{ comment.content }}</span> <em>by {{ comment.commenter.username }}</em> <small class="text-muted">{{ comment.created_at }}</small></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <table class="table">
+            <thead>
+                <tr>
+                <th scope="col">No Comments Yet.</th>
+                </tr>
+            </thead>
+        </table>
+        {% endif %}
     </div>
 {% endblock %}

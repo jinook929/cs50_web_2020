@@ -21,7 +21,7 @@ def index(request):
         pass
 
     context = {
-        "listings": Listing.objects.order_by("-created_at").all(),
+        "listings": Listing.objects.order_by("-created_at").filter(is_closed=False),
         "watchedItemsNum": watchedItemsNum,
     }
     return render(request, "auctions/index.html", context)
@@ -168,6 +168,7 @@ def newListing(request):
     })
 
 def listing(request, id):
+    # Decide the number of watched items by the logged-in user
     watchedItemsNum = 0
     try:
         watcher = User.objects.get(username=request.user.username)
@@ -175,7 +176,8 @@ def listing(request, id):
         watchedItemsNum = len(watchedItems)
     except:
         pass
-
+    
+    # Retrieve watching users to find whether the logged-in user is watching
     try:
         watchingUsers = User.objects.filter(watching=Listing.objects.get(id=id).id)
         print(watchingUsers)
@@ -185,45 +187,87 @@ def listing(request, id):
     except:
         watchingArr = []
 
+    # Prepare variables for the item and its comments
     target = Listing.objects.get(id=id)
+    comments = Comment.objects.all().order_by("-created_at").filter(item=Listing.objects.get(id=id))
 
+    # Update database based on bidding
     if request.method == "POST":
-        bidbox = int(request.POST["bidbox"])
-        print(f"Bidding of ${bidbox}")
-        if bidbox <= target.price:
+        try:
+            bidbox = int(request.POST["bidbox"])
+            message = ""
+            def placeBid():
+                newBid = Bid()
+                newBid.amount = bidbox
+                newBid.item = target
+                newBid.bidder = User.objects.get(username=request.user.username)
+                newBid.save()
+                target.price = newBid.amount
+                target.bidcount += 1
+                target.lastbidding_by = request.user.username
+                target.save()
+
+            if target.bidcount == 0:
+                if bidbox >= target.price:
+                    placeBid()
+                else:
+                    message = "The first bid must be at least as large as the starting bid."            
+            else: 
+                if bidbox > target.price:
+                    placeBid()
+                else:
+                    message = "New bid must be greater than the current one."
+
             return render(request, "auctions/listing.html", {
                 "item": Listing.objects.get(id=id),
                 "watching": watchingArr,
                 "watchedItemsNum": watchedItemsNum,
-                "message": "New bidding should be higher than the current one."
+                "comments": comments,
+                "form": CommentForm(),
+                "message": message,
             })
-        else:
-            target.price = bidbox
+        except:
+            pass
+
+        # Update database based on closing
+        if request.POST["close"]:
+            target.is_closed = True
+            target.winner = target.lastbidding_by
+            message = f"Congratulations, {target.winner} !!! You are won this item."
             target.save()
 
-        return render(request, "auctions/listing.html", {
-            "item": Listing.objects.get(id=id),
-            "watching": watchingArr,
-            "watchedItemsNum": watchedItemsNum,
-        })
+            context = {
+                "item": target,
+                "watching": watchingArr,
+                "watchedItemsNum": watchedItemsNum,
+                "comments": comments,
+                "form": CommentForm(),
+                "winner": target.winner
+            }
+            if target.bidcount < 1:
+                context["winner"] = "No one"
+                return render(request, "auctions/listing.html", context)
+            return render(request, "auctions/listing.html", context)
+        
+        # Update database based on commenting
+        try:
+            newComment = Comment()
+            newComment.content = request.POST["comment"]
+            newComment.item = target
+            newComment.commenter = User.objects.get(username=request.user.username)
+            newComment.save()
+        except:
+            pass
 
     return render(request, "auctions/listing.html", {
         "item": Listing.objects.get(id=id),
         "watching": watchingArr,
         "watchedItemsNum": watchedItemsNum,
+        "comments": comments,
+        "form": CommentForm(),
+        "listerName": target.lister.username,
+        "winner": target.winner
     })
-
-    # target = Listing.objects.get(id=id)
-    # try:
-    #     startWatching = User.objects.get(username=request.user.username)
-    #     try:
-    #         currentUser = target.watched.all().get(username=request.user.username)
-    #         target.watched.remove(currentUser)
-    #     except:
-    #         target.watched.add(startWatching)
-    #         target.save()
-    # except:
-    #     pass
 
 
 def watchlist(request):
@@ -242,6 +286,32 @@ def watchlist(request):
     return render(request, 'auctions/watchlist.html', context)
 
 
+def winlist(request):
+    watchedItemsNum = 0
+    try:
+        watcher = User.objects.get(username=request.user.username)
+        watchedItems = Listing.objects.filter(watched=watcher)
+        watchedItemsNum = len(watchedItems)
+    except:
+        pass
+    
+    try:
+        closedListings = Listing.objects.filter(is_closed=True)
+        winlistings = []
+        winlistings.append(closedListings.get(winner=request.user.username))
+        print(winlistings)
+    except:
+        print("winlistings = []")
+        winlistings = []
+        pass
+
+    context = {
+        "watchedItemsNum": watchedItemsNum,
+        "listings": winlistings,
+    }
+    return render(request, 'auctions/winlist.html', context)
+
+
 def watchlistToggle(request):
     context ={
         "item": Listing.objects.get(name="Yoyo")
@@ -256,3 +326,10 @@ def listingsByLister(request, lister):
         "listings": Listing.objects.filter(lister=username).order_by("-created_at").all(),
     }
     return render(request, 'auctions/listingsByLister.html', context)
+
+def test(request):
+    items = Listing.objects.filter(is_closed=True).order_by("-created_at")    
+    context = {
+        "items": items,
+    }
+    return render(request, "auctions/test.html", context)
