@@ -29,6 +29,9 @@
                             <h4 class="card-title"><a href="{% url 'listing' listing.id %}">{{ listing.name }}</a></h4>
                             <h6 class="card-text">Price: ${{ listing.price }}</h6>
                             <p class="card-text"><small class="text-muted">Created {{ listing.created_at }}</small></p>
+                            {% if listing.is_closed %}
+                                <p class="lead"><strong>This listing is closed</strong></p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

@@ -180,7 +180,6 @@ def listing(request, id):
     # Retrieve watching users to find whether the logged-in user is watching
     try:
         watchingUsers = User.objects.filter(watching=Listing.objects.get(id=id).id)
-        print(watchingUsers)
         watchingArr = []
         for user in watchingUsers:
             watchingArr.append(user.username)
@@ -232,25 +231,30 @@ def listing(request, id):
 
         # Update database based on closing
         try:
-            if request.POST["close"]:
-                target.is_closed = True
-                target.winner = target.lastbidding_by
-                target.watched.remove(User.objects.get(username=target.winner))
-                message = f"Congratulations, {target.winner} !!! You are won this item."
-                target.save()
-
-                context = {
-                    "item": target,
-                    "watching": watchingArr,
-                    "watchedItemsNum": watchedItemsNum,
-                    "comments": comments,
-                    "form": CommentForm(),
-                    "winner": target.winner
-                }
-                if target.bidcount < 1:
-                    context["winner"] = "No one"
-                    return render(request, "auctions/listing.html", context)
+            print(type(request.POST["close"]))
+            print(request.POST["close"])
+            context = {
+                "item": target,
+                "watching": watchingArr,
+                "watchedItemsNum": watchedItemsNum,
+                "comments": comments,
+                "form": CommentForm(),
+            }
+            target.is_closed = True
+            target.save()
+            # When no bidder
+            if request.POST["close"] == 'True' and target.bidcount == 0:
+                context["winner"] = "No one"
                 return render(request, "auctions/listing.html", context)
+
+            # When bidder
+            target.winner = target.lastbidding_by
+            context["winner"] = target.winner
+            target.watched.remove(User.objects.get(username=target.winner))
+            message = f"Congratulations, {target.winner} !!! You are won this item."
+            target.save()
+
+            return render(request, "auctions/listing.html", context)
         except:
             pass
         
@@ -265,37 +269,23 @@ def listing(request, id):
             pass
 
         # Update database based on watchlist button
-        if request.POST["watchbtn"]:
-            if request.POST["watchbtn"] == "watch":
-                target.watched.add(User.objects.get(username=request.user.username))
-                target.save()
-                watchedItemsNum += 1
-                print("Start watching!!!")
+        try:
+            if request.POST["watchbtn"]:
+                if request.POST["watchbtn"] == "watch":
+                    target.watched.add(User.objects.get(username=request.user.username))
+                    target.save()
+                    watchedItemsNum += 1
+                else:
+                    target.watched.remove(User.objects.get(username=request.user.username))
+                    target.save()
+                    watchedItemsNum -= 1
 
-                # context = {
-                #     "item": target,
-                #     "watching": watchingArr,
-                #     "watchedItemsNum": watchedItemsNum,
-                #     "comments": comments,
-                #     "form": CommentForm(),
-                # }
-            else:
-                target.watched.remove(User.objects.get(username=request.user.username))
-                target.save()
-                watchedItemsNum -= 1
-                print("Stop watching")
-
-                # context = {
-                #     "item": target,
-                #     "watching": watchingArr,
-                #     "watchedItemsNum": watchedItemsNum,
-                #     "comments": comments,
-                #     "form": CommentForm(),
-                # }
-            return render(request, "auctions/watchlist.html", {
-                "watchedItemsNum": watchedItemsNum,
-                "listings": Listing.objects.filter(watched=User.objects.get(username=request.user.username))
-            })
+                return render(request, "auctions/watchlist.html", {
+                    "watchedItemsNum": watchedItemsNum,
+                    "listings": Listing.objects.filter(watched=User.objects.get(username=request.user.username))
+                })
+        except:
+            pass
 
     # When method is GET
     return render(request, "auctions/listing.html", {

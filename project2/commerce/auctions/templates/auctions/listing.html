@@ -52,11 +52,10 @@
             </form>
         {% endif %}
 
-        <!-- Show close button only when logged in & closed -->
-        <!-- When user is winner-->
+        <!-- Show winning message When user is winner-->
         {% if request.user.is_authenticated and item.is_closed and item.winner == request.user.username %}
             <button class="btn btn-lg btn-warning">Congratulation, {{ winner }}!!! You are the winner of this item.</button>
-        <!-- When user is not winner-->
+        <!-- Show winning message When user is not winner-->
         {% elif request.user.is_authenticated and item.is_closed %}
             <button class="btn btn-lg btn-warning">{{ winner }} is the winner of this item.</button>
         {% endif %}
