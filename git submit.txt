@@ -19,7 +19,7 @@ git add .
 git commit -m "upload project1 files"
 
 프로젝트 업로드: 
-git push --set-upstream origin web50/projects/2020/x/
+git push --set-upstream origin web50/projects/2020/x/프로젝트명
 
 =====================================================================
 
